@@ -24,3 +24,14 @@ class Database:
         if product is None:
             self.db["dataset"].insert_one(comment_detail)
             return
+        
+    def get_labeled_dataset(self):
+        query = {
+            "$or":[
+                {"sentiment":1}, 
+                {"sentiment":2},
+                {"sentiment":3}
+            ]
+        }
+
+        return self.db["dataset"].find(query)
