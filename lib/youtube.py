@@ -4,10 +4,14 @@ from datetime import datetime
 from itertools import islice
 from youtubesearchpython import *
 from youtube_comment_downloader import *
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 class Youtube():
-    def __init__(self) -> None:
-        self.url        = "https://www.youtube.com/watch?v="
+    def __init__(self):
+        self.url = os.getenv("YOUTUBE_URL")
 
     def list_video(self, keyword, limit:int=20):
         videos = CustomSearch(keyword, VideoSortOrder.uploadDate, limit=limit)
