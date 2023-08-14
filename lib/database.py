@@ -32,6 +32,12 @@ class Database:
         }
 
         return list(self.db["dataset"].find(query))
+    
+    def get_all_video(self):
+        return list(self.db["youtube_videos"].find())
+    
+    def get_video(self, video_id):
+        return self.db["youtube_videos"].find_one({"videoId":video_id})
 
     def insert_instance(self, instance):
         if not self.db["instance"].find_one({"name":instance["name"]}):
