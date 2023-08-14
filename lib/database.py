@@ -1,7 +1,4 @@
 import os
-import random
-from bson import ObjectId
-from datetime import datetime
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
@@ -34,4 +31,20 @@ class Database:
             ]
         }
 
-        return self.db["dataset"].find(query)
+        return list(self.db["dataset"].find(query))
+
+    def insert_instance(self, instance):
+        if not self.db["instance"].find_one({"name":instance["name"]}):
+            self.db["instance"].insert_one(instance)
+            return
+        
+    def get_instance_text(self):
+        all_instance = list(self.db["instance"].find({}))
+        text = "("
+        for i, x in enumerate(all_instance):
+            text += x["name"]
+            if i < len(all_instance)-1:
+                text += "|"
+            else:
+                text += ")"
+        return text
