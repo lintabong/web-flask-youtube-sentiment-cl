@@ -6,6 +6,34 @@
             <h1 class="h2">Result</h1>
         </div>
 
-        <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+        <!-- <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas> -->
+        <h1 class="h3">Video Title: {{ video_detail["title"] }}</h1>
+        <br>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Author</th>
+                    <th scope="col">Text</th>
+                    <th scope="col">Sentiment</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for each in video_comments %}
+                    <tr>
+                        <td>{{ each["author"]["name"] }}</td>
+                        <td>{{ each["text"] }}</td>
+                        <td>{{ each["sentiment"] }}</td>
+                        <td> </td>
+                        <td> </td>
+                    </tr>
+                {% endfor %}    
+            </tbody>
+        </table>
     </main>
+{% endblock %}
+
+{% block graph %}
+    <script src="{{ url_for('static', filename='js/graph.js') }}"></script>
 {% endblock %}
