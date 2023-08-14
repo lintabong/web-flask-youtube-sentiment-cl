@@ -12,6 +12,7 @@ from helper import preprocessing
 
 
 def run(video_id):
+    print(f'run scrape {video_id}')
     cv      = CountVectorizer(max_features=1500)
     db      = Database()
     youtube = Youtube()

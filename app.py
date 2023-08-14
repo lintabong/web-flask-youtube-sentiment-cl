@@ -1,5 +1,5 @@
 import os
-
+from threading import Thread
 from flask import Flask, request, render_template
 from dotenv import load_dotenv
 
@@ -16,7 +16,10 @@ app = Flask(__name__)
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == 'POST':
-        print(request.form.get("fname"))
+        video_id = request.form.get("fname")
+
+        p = Thread(target=predict.run, args=(video_id,))
+        p.start()
 
         render_template("index.html")
     return render_template("index.html")
@@ -35,7 +38,6 @@ def result(video_id):
     video_detail = database.get_video(video_id)
 
     if video_detail is not None:
-        print(video_detail)
         return render_template("result.html", video_detail=video_detail, video_comments=video_detail["comments"])
     
     return render_template("result.html")
