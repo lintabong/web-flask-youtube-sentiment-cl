@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">List Video</h1>
+        </div>
+
+        <div class="input-group mb-3">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">video Id</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Total Comment</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for each in all_video %}
+                        <tr>
+                            <td><a href="{{ url_for('result', video_id=each[0]) }}">{{ each[0] }}</a></td>
+                            <td>{{ each[1] }}</td>
+                            <td>{{ each[2] }}</td>
+                            <td> </td>
+                            <td> </td>
+                        </tr>
+                    {% endfor %}
+                    
+                </tbody>
+            </table>
+        </div>
+    </main>
+{% endblock %}
