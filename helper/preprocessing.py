@@ -10,6 +10,7 @@ listStopword =  set(stopwords.words('indonesian'))
 
 def clean_text(text):
     text = text.lower()
+    text = re.sub(r"^@[A-Za-z]+|.+ @[A-Za-z]+", "", text)
     text = re.sub(r'\d+', '', text)
     text = re.sub(r"[!”#$%&’()*+,-./:;<=>?@[\]^_`{|}~]", "", text)
     text = " ".join(text.split())
