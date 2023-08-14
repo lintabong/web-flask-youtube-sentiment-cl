@@ -1,9 +1,8 @@
 import os
+import re
 import sys
-import numpy
 
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.getcwd())))
@@ -12,36 +11,37 @@ from lib.youtube import Youtube
 from helper import preprocessing
 
 
-def run(text):
+def run(video_id):
     cv      = CountVectorizer(max_features=1500)
     db      = Database()
     youtube = Youtube()
 
-    X = []
-    y = []
-    i = 0
-    for i, post in enumerate(db.get_labeled_dataset()):
-        X.append(preprocessing.run(post["text"]))
+    result   = youtube.get_comments(video_id)
+    instance = db.get_instance_text()
+
+    X, y = [], []
+    dataset = db.get_labeled_dataset()
+    for post in dataset:
+        t = preprocessing.run(post["text"])
+        t = re.sub(instance, "", t)
+        X.append(t)
         y.append(post["sentiment"])
 
-    X.append(text)
-    y.append(3)
+    for comment in result["comments"]:
+        t = preprocessing.run(comment["text"])
+        t = re.sub(instance, "", t)
+        X.append(t)
+
     X = cv.fit_transform(X).toarray()
 
-    # X_train, X_test, y_train, _ = train_test_split(X, y, test_size=0.25, random_state=0)
-
     classifier = MultinomialNB()
-    classifier.fit(X[:i], y[:i])
+    classifier.fit(X[:len(dataset)-1], y[:len(dataset)-1])
 
     classes = ["negative", "neutral", "positive"]
-    
-    # y_pred = classifier.predict([text].reshape(1, -1))
-    y_pred = classifier.predict(X[i+1:])
-    print(y_pred)
-    # return classes[y_pred-1]
 
+    y_pred = classifier.predict(X[len(dataset):])
 
-text ="sangat bagus"
-text = preprocessing.run(text)
+    for i in range(len(y_pred)):
+        result["comments"][i]["sentiment"] = classes[(y_pred[i]-1)]
 
-print(run(text))
+    db.upsert_video(result)
