@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 
+import yt_dlp as youtube_dl
 from itertools import islice
 from youtubesearchpython import *
 from youtube_comment_downloader import *
@@ -21,6 +22,12 @@ class Youtube():
     @staticmethod
     def get_detail(url):
         return Video.get(url, mode=ResultMode.json, get_upload_date=True)
+    
+    @staticmethod
+    def get_detail_dl(url):
+        with youtube_dl.YoutubeDL({}) as ydl:
+            info = ydl.extract_info(url, download=False)
+            return info
 
     @staticmethod
     def get_comments_only(url, total:int=1000):
@@ -30,9 +37,10 @@ class Youtube():
         return [x for x in islice(comments, total)]
     
     def get_comments(self, video_id:str):
-        url      = self.url + video_id
-        detail   = self.get_detail(url)
-        comments = self.get_comments_only(url)
+        url       = self.url + video_id
+        detail    = self.get_detail(url)
+        detail_dl = self.get_detail_dl(url)
+        comments  = self.get_comments_only(url)
 
         formated_comments = []
         for comment in comments:
@@ -51,6 +59,7 @@ class Youtube():
             "title": detail["title"],
             "viewCount": detail["viewCount"]["text"],
             "channel": detail["channel"],
+            "thumbnail": detail_dl["thumbnail"],
             "createdAt": datetime.strptime(detail["uploadDate"], "%Y-%m-%d"),
             "crawledAt": datetime.utcnow(),
             "description": detail["description"],
