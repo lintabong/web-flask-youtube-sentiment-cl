@@ -3,37 +3,127 @@
 {% block content %}
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h1 class="h2">Result</h1>
+            <h1 class="h4">{{ video_detail["title"] }}</h1>
         </div>
 
-        <!-- <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas> -->
-        <h1 class="h3">Video Title: {{ video_detail["title"] }}</h1>
-        <br>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Author</th>
-                    <th scope="col">Text</th>
-                    <th scope="col">Sentiment</th>
-                    <th scope="col"></th>
-                    <th scope="col"></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for each in video_comments %}
-                    <tr>
-                        <td>{{ each["author"]["name"] }}</td>
-                        <td>{{ each["text"] }}</td>
-                        <td>{{ each["sentiment"] }}</td>
-                        <td> </td>
-                        <td> </td>
-                    </tr>
-                {% endfor %}    
-            </tbody>
-        </table>
+        <div class="row">
+            <div class="col-xl-8 col-lg-7">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">Summary</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-area">
+                            <div class="row">
+                                <div class="col-8">
+                                    <img src="{{ image_url }}" class="img-fluid">
+                                </div>
+                                <div class="col">
+                                    <p>{{ description }}</p>
+                                </div>
+                              </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-lg-5">
+                <div class="card shadow mb-4">
+                    <div
+                        class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">Sentiment</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-pie pt-4 pb-2">
+                            <canvas class="my-4 w-100" id="myChart" width="300" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl col-lg-7">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">Comments</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-area">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Author</th>
+                                        <th scope="col">Text</th>
+                                        <th scope="col">Sentiment</th>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for each in video_comments %}
+                                        <tr>
+                                            <td>{{ each["author"]["name"] }}</td>
+                                            <td>{{ each["text"] }}</td>
+                                            <td>{{ each["sentiment"] }}</td>
+                                            <td> </td>
+                                            <td> </td>
+                                        </tr>
+                                    {% endfor %}    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
 {% endblock %}
 
 {% block graph %}
-    <script src="{{ url_for('static', filename='js/graph.js') }}"></script>
+<script>
+    window.chartColors = {
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(201, 203, 207)'
+    };
+  
+    const ctx = document.getElementById('myChart')
+  
+    const myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: [
+                'negative',
+                'neutral',
+                'positive'],
+            datasets: [{
+            data: [
+                '{{ negative }}',
+                '{{ neutral  }}',
+                '{{ positive }}'
+            ],
+            lineTension: 0,
+            backgroundColor: [
+                window.chartColors.red,
+                window.chartColors.grey,
+                window.chartColors.blue,
+            ],
+            borderColor: '#007bff',
+            borderWidth: 0,
+            }]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+            }
+        }
+    })
+</script>
 {% endblock %}

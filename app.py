@@ -29,7 +29,7 @@ def list_video():
     if request.method == "POST":
         return render_template("list_video.html", all_video=all_video)
     
-    all_video = [[y["videoId"], y["title"], len(y["comments"])] for y in database.get_all_video()]
+    all_video = [[y["videoId"], y["title"], len(y["comments"]), y["thumbnail"]] for y in database.get_all_video()]
 
     return render_template("list_video.html", all_video=all_video)
 
@@ -38,7 +38,27 @@ def result(video_id):
     video_detail = database.get_video(video_id)
 
     if video_detail is not None:
-        return render_template("result.html", video_detail=video_detail, video_comments=video_detail["comments"])
+        pos = 0
+        neg = 0
+        neu = 0
+
+        for comment in video_detail["comments"]:
+            if comment["sentiment"] == "negative":
+                neg+=1
+            if comment["sentiment"] == "neutral":
+                neu+=1
+            if comment["sentiment"] == "positive":
+                pos+=1
+        
+        description = str(video_detail["description"][:200]) + " . . . " if len(video_detail["description"]) > 200 else video_detail["description"]
+        return render_template("result.html", 
+                               video_detail=video_detail, 
+                               video_comments=video_detail["comments"],
+                               image_url=video_detail["thumbnail"],
+                               description=description,
+                               negative=neg,
+                               neutral=neu,
+                               positive=pos)
     
     return render_template("result.html")
 
