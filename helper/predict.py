@@ -41,6 +41,7 @@ def run(video_id):
     classes = ["negative", "neutral", "positive"]
 
     y_pred = classifier.predict(X[len(dataset):])
+    print(y_pred)
 
     for i in range(len(y_pred)):
         result["comments"][i]["sentiment"] = classes[(y_pred[i]-1)]
