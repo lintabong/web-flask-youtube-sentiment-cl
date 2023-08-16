@@ -44,6 +44,9 @@ class Database:
             self.db["instance"].insert_one(instance)
             return
         
+    def get_instance(self):
+        return list(self.db["instance"].find({}))
+        
     def get_instance_text(self):
         all_instance = list(self.db["instance"].find({}))
         text = "("
