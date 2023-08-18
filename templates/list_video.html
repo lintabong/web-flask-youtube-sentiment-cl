@@ -23,9 +23,9 @@
                                 <tbody>
                                     {% for each in all_video %}
                                         <tr>
-                                            <td><a href="{{ url_for('result', video_id=each[0]) }}">{{ each[0] }}</a></td>
-                                            <td>{{ each[1] }}</td>
-                                            <td>{{ each[2] }}</td>
+                                            <td><a href="{{ url_for('result', video_id=each['videoId']) }}">{{ each['videoId'] }}</a></td>
+                                            <td>{{ each['title'] }}</td>
+                                            <td>{{ 0 }}</td>
                                             <td> </td>
                                             <td> </td>
                                         </tr>

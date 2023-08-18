@@ -28,9 +28,15 @@
                                                     Set Label
                                                 </button>
                                                 <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item" href="#">negative</a></li>
-                                                    <li><a class="dropdown-item" href="#">neutral</a></li>
-                                                    <li><a class="dropdown-item" href="#">positive</a></li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="{{ url_for('labeling', commentId=each['commentId'], label=1, current=request.args.get('start')) }}">negative</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="{{ url_for('labeling', commentId=each['commentId'], label=2, current=request.args.get('start')) }}">neutral</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="{{ url_for('labeling', commentId=each['commentId'], label=3, current=request.args.get('start')) }}">positive</a>
+                                                    </li>
                                                 </ul>
                                             </div>
                                         </td>

@@ -38,6 +38,15 @@ class Database:
     
     def count_dataset(self):
         return self.db["dataset"].count_documents({})
+    
+    def count_labeled_dataset(self):
+        negative = self.db["dataset"].count_documents({"sentiment": 1})
+        neutral  = self.db["dataset"].count_documents({"sentiment": 2})
+        positive = self.db["dataset"].count_documents({"sentiment": 3})
+        return negative, neutral, positive
+    
+    def update_dataset(self, comment_id, sentiment):
+        self.db["dataset"].update_one({"commentId": comment_id}, {"$set": {"sentiment": sentiment}})
 
     def get_all_video(self):
         return list(self.db["youtube_videos"].find())
