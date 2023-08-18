@@ -1,16 +1,22 @@
+import os
 import re
+import sys
 from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 
-factory = StemmerFactory()
-stemmer = factory.create_stemmer()
-listStopword =  set(stopwords.words('indonesian'))
+sys.path.insert(1, os.path.abspath(os.path.join(os.getcwd())))
+from lib.database import Database
+
+database = Database()
+
+factory   = StemmerFactory()
+stemmer   = factory.create_stemmer()
 
 
 def clean_text(text):
     text = text.lower()
-    text = re.sub(r"^@[A-Za-z]+|.+ @[A-Za-z]+", "", text)
+    text = re.sub(r"(?:((?<=[\s\W])|^)[#](\w+|[^#]|$)|((?<=[\s\W])|^)[@]([a-zA-Z0-9_]+|$))", "", text)
+    text = re.sub(r"([a-zA-Z0-9])\1", "", text)
     text = re.sub(r'\d+', '', text)
     text = re.sub(r"[!”#$%&’()*+,-./:;<=>?@[\]^_`{|}~]", "", text)
     text = " ".join(text.split())
@@ -18,19 +24,13 @@ def clean_text(text):
     return text
 
 def tokenize(text):
-    token = word_tokenize(text)
-    return token
+    return word_tokenize(text)
 
 def remove_stopwords(token):
-    removed = []
-    for t in token:
-        if t not in listStopword:
-            removed.append(t)
-
-    return removed
+    return [word for word in token if word not in database.get_instance()]
 
 def build_text(token):
-    return ''.join(token)
+    return "".join(token)
 
 def run(text):
     text = clean_text(text)

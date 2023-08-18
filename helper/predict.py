@@ -1,5 +1,4 @@
 import os
-import re
 import sys
 
 from sklearn.feature_extraction.text import CountVectorizer
@@ -18,19 +17,16 @@ def run(video_id):
     youtube = Youtube()
 
     result   = youtube.get_comments(video_id)
-    instance = db.get_instance_text()
 
     X, y = [], []
     dataset = db.get_labeled_dataset()
     for post in dataset:
         t = preprocessing.run(post["text"])
-        t = re.sub(instance, "", t)
         X.append(t)
         y.append(post["sentiment"])
 
     for comment in result["comments"]:
         t = preprocessing.run(comment["text"])
-        t = re.sub(instance, "", t)
         X.append(t)
 
     X = cv.fit_transform(X).toarray()
