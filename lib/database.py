@@ -33,6 +33,12 @@ class Database:
 
         return list(self.db["dataset"].find(query))
     
+    def get_dataset(self, start=0, limit=10):
+        return list(self.db["dataset"].find({}).limit(limit).skip(int(start)))
+    
+    def count_dataset(self):
+        return self.db["dataset"].count_documents({})
+
     def get_all_video(self):
         return list(self.db["youtube_videos"].find())
     
