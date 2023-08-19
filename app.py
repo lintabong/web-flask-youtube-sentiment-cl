@@ -68,14 +68,21 @@ def dataset():
 
     pagination = formatter.pagination(offset, end)
 
+    neg, neu, pos = database.count_labeled_dataset()
+
     if request.method == "POST":
         video_id = request.form.get("fname")
 
         p = Thread(target=crawl_dataset.run, args=(video_id,))
         p.start()
-
-        return render_template("dataset.html", comments=comments, offset=offset, pagination=pagination)
-    return render_template("dataset.html", comments=comments, offset=offset, pagination=pagination)
+        
+    return render_template("dataset.html", 
+                            comments=comments, 
+                            offset=offset, 
+                            pagination=pagination,
+                            negative=neg,
+                            neutral=neu,
+                            positive=pos)
 
 
 @app.route("/labeling")
