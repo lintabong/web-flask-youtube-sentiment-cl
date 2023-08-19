@@ -29,13 +29,16 @@
                                                 </button>
                                                 <ul class="dropdown-menu">
                                                     <li>
-                                                        <a class="dropdown-item" href="{{ url_for('labeling', commentId=each['commentId'], label=1, current=request.args.get('start')) }}">negative</a>
+                                                        <a class="dropdown-item" href="{{ url_for('labeling', commentId=each['commentId'], label=0, current=request.args.get('offset')) }}">unlabel</a>
                                                     </li>
                                                     <li>
-                                                        <a class="dropdown-item" href="{{ url_for('labeling', commentId=each['commentId'], label=2, current=request.args.get('start')) }}">neutral</a>
+                                                        <a class="dropdown-item" href="{{ url_for('labeling', commentId=each['commentId'], label=1, current=request.args.get('offset')) }}">negative</a>
                                                     </li>
                                                     <li>
-                                                        <a class="dropdown-item" href="{{ url_for('labeling', commentId=each['commentId'], label=3, current=request.args.get('start')) }}">positive</a>
+                                                        <a class="dropdown-item" href="{{ url_for('labeling', commentId=each['commentId'], label=2, current=request.args.get('offset')) }}">neutral</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="{{ url_for('labeling', commentId=each['commentId'], label=3, current=request.args.get('offset')) }}">positive</a>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -47,21 +50,17 @@
                         <div class="container text-center">
                             <nav aria-label="Page navigation example">
                                 <ul class="pagination">
-                                    <li class="page-item">
-                                        <a class="page-link" href="#" aria-label="Previous">
-                                            <span aria-hidden="true">&laquo;</span>
-                                        </a>
-                                    </li>
-                                    {% for i in range(end) %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="{{ url_for('dataset', start=i*10) }}">{{ i+1 }}</a>
-                                        </li>
+                                    {% for i in pagination %}
+                                        {% if i == offset %}
+                                            <li class="page-item active" aria-current="page">
+                                                <a class="page-link" href="{{ url_for('dataset', offset=i) }}">{{ i }}</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ url_for('dataset', offset=i) }}">{{ i }}</a>
+                                            </li>
+                                        {% endif %}
                                     {% endfor %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="#" aria-label="Next">
-                                            <span aria-hidden="true">&raquo;</span>
-                                        </a>
-                                    </li>
                                 </ul>
                             </nav>
                         </div>

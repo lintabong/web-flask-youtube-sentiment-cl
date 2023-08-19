@@ -1,4 +1,5 @@
 import os
+import math
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
@@ -9,6 +10,8 @@ class Database:
     def __init__(self):
         self.client = MongoClient(os.getenv("DB_CLIENT"))
         self.db     = self.client[os.getenv("DB_NAME")]
+
+        self.limit = int(os.getenv("LIMIT_OFFSET_DATASET"))
 
     def upsert_video(self, video_detail:dict):
         product = self.db["youtube_videos"].find_one({"videoId": video_detail["videoId"]})
@@ -33,11 +36,12 @@ class Database:
 
         return list(self.db["dataset"].find(query))
     
-    def get_dataset(self, start=0, limit=10):
-        return list(self.db["dataset"].find({}).limit(limit).skip(int(start)))
+    def get_dataset(self, offset=0):
+        return list(self.db["dataset"].find({}).limit(self.limit).skip(int(offset)*self.limit))
     
-    def count_dataset(self):
-        return self.db["dataset"].count_documents({})
+    def get_max_dataset_page(self):
+        end = self.db["dataset"].count_documents({})
+        return math.floor(end/self.limit) + 1 if end%self.limit > 0 else math.floor(end/self.limit)
     
     def count_labeled_dataset(self):
         negative = self.db["dataset"].count_documents({"sentiment": 1})
