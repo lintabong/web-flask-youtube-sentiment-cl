@@ -34,7 +34,7 @@ class Database:
             ]
         }
 
-        return list(self.db["dataset"].find(query))
+        return list(self.db["dataset2"].find(query))
     
     def get_dataset(self, offset=0):
         return list(self.db["dataset"].find({}).limit(self.limit).skip(int(offset)*self.limit))
@@ -76,3 +76,6 @@ class Database:
             else:
                 text += ")"
         return text
+
+    def upsert_result():
+        pass
