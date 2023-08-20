@@ -13,8 +13,10 @@ from helper import train_svm
 from lib.database import Database
 
 database = Database()
+database.init_instance()
 
 app = Flask(__name__)
+
 
 
 @app.route("/", methods=["GET", "POST"])

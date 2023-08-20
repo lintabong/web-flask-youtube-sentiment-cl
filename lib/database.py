@@ -12,6 +12,18 @@ class Database:
         self.db     = self.client[os.getenv("DB_NAME")]
 
         self.limit = int(os.getenv("LIMIT_OFFSET_DATASET"))
+        self.instances_person = ["ahy", "rocky", "gerung", "jokowi", "abud", 
+                                 "anies", "moeldoko", "sandiaga", "rokki", "garong",
+                                 "khofifah", "yenni", "moeldoko", "roki", "widodo",
+                                 "pranowo", "ganjar", "prabowo", "denny", "siregar",
+                                 "mahfud", "mahfudmd", "ahok", "puan", "maharani",
+                                 "megawati", "andika"]
+        
+        self.instances_organization = ["pdi", "bmkg", "pdip", "golkar", "pks", "gerindra",
+                                      "nasdem", "pkb", "partai buruh", "psi"]
+        
+        self.instances_nation = ["indo", "indonesia", "indonesian", "inggris", "amerika",
+                                 "china", "malaysia", "arab"]
 
     def upsert_video(self, video_detail:dict):
         product = self.db["youtube_videos"].find_one({"videoId": video_detail["videoId"]})
@@ -57,6 +69,17 @@ class Database:
 
     def get_video(self, video_id):
         return self.db["youtube_videos"].find_one({"videoId":video_id})
+
+    def init_instance(self):
+        if self.db["instance"].find_one({}) is None:
+            for instance in self.instances_person:
+                self.db["instance"].insert_one({"name": instance, "type": "person"})
+
+            for instance in self.instances_nation:
+                self.db["instance"].insert_one({"name": instance, "type": "nation"})
+
+            for instance in self.instances_organization:
+                self.db["instance"].insert_one({"name": instance, "type": "organization"})
 
     def insert_instance(self, instance):
         if not self.db["instance"].find_one({"name":instance["name"]}):
