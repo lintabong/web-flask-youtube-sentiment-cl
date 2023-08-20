@@ -1,9 +1,7 @@
 import os
 import sys
-import random
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.getcwd())))
-from datetime import datetime
 from lib.youtube import Youtube
 from lib.database import Database
 

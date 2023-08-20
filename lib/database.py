@@ -24,7 +24,7 @@ class Database:
         if product is None:
             self.db["dataset"].insert_one(comment_detail)
             return
-        
+
     def get_labeled_dataset(self):
         query = {
             "$or":[
@@ -35,26 +35,26 @@ class Database:
         }
 
         return list(self.db["dataset2"].find(query))
-    
+
     def get_dataset(self, offset=0):
         return list(self.db["dataset"].find({}).limit(self.limit).skip(int(offset)*self.limit))
     
     def get_max_dataset_page(self):
         end = self.db["dataset"].count_documents({})
         return math.floor(end/self.limit) + 1 if end%self.limit > 0 else math.floor(end/self.limit)
-    
+
     def count_labeled_dataset(self):
         negative = self.db["dataset"].count_documents({"sentiment": 1})
         neutral  = self.db["dataset"].count_documents({"sentiment": 2})
         positive = self.db["dataset"].count_documents({"sentiment": 3})
         return negative, neutral, positive
-    
+
     def update_dataset(self, comment_id, sentiment):
         self.db["dataset"].update_one({"commentId": comment_id}, {"$set": {"sentiment": sentiment}})
 
     def get_all_video(self):
         return list(self.db["youtube_videos"].find())
-    
+
     def get_video(self, video_id):
         return self.db["youtube_videos"].find_one({"videoId":video_id})
 
@@ -62,10 +62,10 @@ class Database:
         if not self.db["instance"].find_one({"name":instance["name"]}):
             self.db["instance"].insert_one(instance)
             return
-        
+
     def get_instance(self):
         return list(self.db["instance"].find({}))
-        
+
     def get_instance_text(self):
         all_instance = list(self.db["instance"].find({}))
         text = "("
@@ -77,5 +77,58 @@ class Database:
                 text += ")"
         return text
 
-    def upsert_result():
-        pass
+    def upsert_result(self, nb=None, svm=None, test_size=10):
+        if self.db["result"].find_one({"result": 1}) is not None:
+            if svm is not None:
+                self.db["result"].update_one({"result": 1}, {"$set": {"svm": svm, "testSize": test_size}})
+            if nb is not None:
+                self.db["result"].update_one({"result": 1}, {"$set": {"nb": nb, "testSize": test_size}})
+            
+            return
+
+        if svm is not None:
+            self.db["result"].insert_one({
+                "result": 1,
+                "testSize": test_size,
+                "svm": svm
+            })
+
+        if nb is not None:
+            self.db["result"].insert_one({
+                "result": 1,
+                "testSize": test_size,
+                "nb": nb,
+            })
+
+    def get_result_model(self):
+        result = self.db["result"].find_one({"result": 1})
+
+        if result is None:
+            result = {
+                "nb": {
+                    "accuracy": 0,
+                    "precission": 0,
+                    "recall": 0
+                },
+                "svm": {
+                    "accuracy": 0,
+                    "precission": 0,
+                    "recall": 0
+                }
+            }
+
+        if "svm" not in result:
+            result["svm"] = {
+               "accuracy": 0,
+                "precission": 0,
+                "recall": 0 
+            }
+        
+        if "nb" not in result:
+            result["nb"] = {
+               "accuracy": 0,
+                "precission": 0,
+                "recall": 0 
+            }
+
+        return result

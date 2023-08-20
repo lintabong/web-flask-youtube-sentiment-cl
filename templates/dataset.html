@@ -13,23 +13,35 @@
                             <thead>
                               <tr>
                                 <th scope="col">Text</th>
-                                <th scope="col">Sentiment</th>
-                                <th scope="col">Handle</th>
+                                <th scope="col" style="text-align: right;"></th>
                               </tr>
                             </thead>
                             <tbody>
                                 {% for each in comments %}
                                     <tr>
                                         <td>{{ each["text"] }}</td>
-                                        <td>{{ each["sentiment"] }}</td>
-                                        <td>
+                                        <td style="text-align: right;">
                                             <div class="btn-group">
-                                                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    Set Label
+                                                {% if each["sentiment"] == 0 %}
+                                                <button style="width:100px" class="btn btn-success btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                    No-label
                                                 </button>
+                                                {% elif each["sentiment"] == 1 %}
+                                                <button style="width:100px" class="btn btn-danger btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                    Negative
+                                                </button>
+                                                {% elif each["sentiment"] == 2 %}
+                                                <button style="width:100px" class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                    Neutral
+                                                </button>
+                                                {% else %}
+                                                <button style="width:100px" class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                    Positive
+                                                </button>
+                                                {% endif %}
                                                 <ul class="dropdown-menu">
                                                     <li>
-                                                        <a class="dropdown-item" href="{{ url_for('labeling', commentId=each['commentId'], label=0, current=request.args.get('offset')) }}">unlabel</a>
+                                                        <a class="dropdown-item" href="{{ url_for('labeling', commentId=each['commentId'], label=0, current=request.args.get('offset')) }}">no-label</a>
                                                     </li>
                                                     <li>
                                                         <a class="dropdown-item" href="{{ url_for('labeling', commentId=each['commentId'], label=1, current=request.args.get('offset')) }}">negative</a>
@@ -93,22 +105,65 @@
             <div class="col-xl col-lg-7">
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Model</h6>
+                        <h6 class="m-0 font-weight-bold text-primary">Train Dataset</h6>
+                    </div>
+                    <div class="card-body">
+                        <form action="{{ url_for('trainnb')}}" method="post" class="row g-1">
+                            <div class="col-auto">
+                                <input type="text" class="form-control" name="percentage-test-data" placeholder="test data in percent">
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary mb-3">Run Naive Bayes</button>
+                            </div>
+                        </form>
+                        <form action="{{ url_for('trainsvm')}}" method="post" class="row g-1">
+                            <div class="col-auto">
+                                <input type="text" class="form-control" name="percentage-test-data" placeholder="test data in percent">
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary mb-3">Run SVM</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row py-3">
+            <div class="col-xl col-lg-7">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">Summary</h6>
                     </div>
                     <div class="card-body">
                         <div class="container">
                             <div class="row">
-                                <form action="" method="post" class="row g-3">
-                                    <div class="col-auto">
-                                        <input type="text" class="form-control" name="fname" placeholder="test data in percent">
-                                    </div>
-                                    <div class="col-auto">
-                                        <button type="submit" class="btn btn-primary mb-3">Confirm</button>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="row">
-                                dasd
+                                <table class="table table-bordered">
+                                    <thead>
+                                      <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Naive Bayes</th>
+                                        <th scope="col">Support Vector Machines</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr>
+                                        <th scope="row">Accuracy</th>
+                                        <td>{{ result['nb']['accuracy'] }}</td>
+                                        <td>{{ result['svm']['accuracy'] }}</td>
+                                      </tr>
+                                      <tr>
+                                        <th scope="row">Precission</th>
+                                        <td>{{ result['nb']['precission'] }}</td>
+                                        <td>{{ result['svm']['precission'] }}</td>
+                                      </tr>
+                                      <tr>
+                                        <th scope="row">Recall</th>
+                                        <td>{{ result['nb']['recall'] }}</td>
+                                        <td>{{ result['svm']['recall'] }}</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
                             </div>
                         </div>
                     </div>

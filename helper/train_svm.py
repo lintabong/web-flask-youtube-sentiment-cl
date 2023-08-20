@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import datetime
 
 from sklearn import svm
 from sklearn.metrics import classification_report
@@ -12,10 +13,11 @@ from helper import preprocessing
 
 
 def run(size):
+    print("run svm training")
+
     db = Database()
 
     posts = db.get_labeled_dataset()
-    print(len(posts))
 
     X = []
     y = []
@@ -38,8 +40,23 @@ def run(size):
     svm_classifier.fit(train_vectors, y_train)
 
     y_pred = svm_classifier.predict(test_vectors)
-
-    print(y_pred)
-
     report = classification_report(y_test, y_pred, output_dict=True)
     print(report)
+
+    result = {
+        "trained": datetime.utcnow(),
+        "testSize": size,
+        "accuracy": report["accuracy"],
+        "precission": report["macro avg"]["precision"],
+        "recall": report["macro avg"]["recall"],
+        "confussionMatrix": []
+    }
+
+    for i in ["1", "2", "3"]:
+        if i in report:
+            result["confussionMatrix"].append({
+                "class": i,
+                "result": report[i]
+            })
+
+    db.upsert_result(nb=None, svm=result, test_size=size)

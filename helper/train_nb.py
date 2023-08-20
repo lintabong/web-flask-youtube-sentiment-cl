@@ -1,14 +1,14 @@
 import os
 import sys
+from datetime import datetime
 
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
 
-
 sys.path.insert(1, os.path.abspath(os.path.join(os.getcwd())))
 from lib.database import Database
-from lib.youtube import Youtube
 from helper import preprocessing
 
 
@@ -26,10 +26,29 @@ def run(size):
 
     X = cv.fit_transform(X).toarray()
 
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=size/100, random_state=0)
+
     classifier = MultinomialNB()
-    classifier.fit(X[:len(dataset)-1], y[:len(dataset)-1])
+    classifier.fit(X_train, y_train)
 
-    classes = ["negative", "neutral", "positive"]
+    y_pred = classifier.predict(X_test)
+    report = classification_report(y_test, y_pred, output_dict=True)
+    print(report)
 
-    y_pred = classifier.predict(X[len(dataset):])
-    print(y_pred)
+    result = {
+        "trained": datetime.utcnow(),
+        "testSize": size,
+        "accuracy": report["accuracy"],
+        "precission": report["macro avg"]["precision"],
+        "recall": report["macro avg"]["recall"],
+        "confussionMatrix": []
+    }
+
+    for i in ["1", "2", "3"]:
+        if i in report:
+            result["confussionMatrix"].append({
+                "class": i,
+                "result": report[i]
+            })
+
+    db.upsert_result(nb=result, svm=None, test_size=size)
