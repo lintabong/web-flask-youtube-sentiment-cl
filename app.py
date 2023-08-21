@@ -18,7 +18,6 @@ database.init_instance()
 app = Flask(__name__)
 
 
-
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
@@ -32,8 +31,8 @@ def index():
 
 @app.route("/list_video")
 def list_video():
-    return render_template("list_video.html", 
-                           all_video=database.get_all_video())
+    all_video = database.get_all_video()
+    return render_template("list_video.html", all_video=all_video)
 
 
 @app.route("/result/<video_id>")
@@ -43,16 +42,17 @@ def result(video_id):
     if video_detail is None:
         return redirect(url_for("list_video"))
     
-    neg, neu, pos = database.count_labeled_dataset()
+    neg, neu, pos = database.count_comment_sentiment_video(video_id)
 
     if len(video_detail["description"]) >= 200:
         description = f'{video_detail["description"][:200]}... '
     else:
         description = video_detail["description"]
 
-    return render_template("result.html", 
-                            video_detail=video_detail, 
-                            video_comments=video_detail["comments"],
+    return render_template("result.html",
+                            video_id=video_detail["videoId"],
+                            video_detail=video_detail,
+                            video_comments=video_detail["datasetComments"],
                             image_url=video_detail["thumbnail"],
                             description=description,
                             negative=neg,
@@ -95,6 +95,13 @@ def labeling():
     return redirect(url_for("dataset", offset=args["current"]))
 
 
+@app.route("/labeling_from_result")
+def labeling_from_result():    
+    args = request.args
+    database.update_dataset(args["commentId"], int(args["label"]))
+    return redirect(url_for("result", video_id=args["video_id"]))
+
+
 @app.route("/train_nb", methods=["GET", "POST"])
 def trainnb():
     if request.method == "POST":
@@ -108,6 +115,7 @@ def trainnb():
 
     return redirect(url_for("dataset", offset=1))
 
+
 @app.route("/train_svm", methods=["GET", "POST"])
 def trainsvm():
     if request.method == "POST":
@@ -120,6 +128,13 @@ def trainsvm():
             print(error)
 
     return redirect(url_for("dataset", offset=1))
+
+
+@app.route("/delete_video/<video_id>")
+def delete_video(video_id):
+    database.delete_video_and_dataset(video_id)
+
+    return redirect(url_for("list_video"))
 
 
 if __name__ == "__main__":

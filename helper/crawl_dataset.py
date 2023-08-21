@@ -10,7 +10,11 @@ database = Database()
 
 def run(video_id):
     print("start crawl", video_id)
+
     result = youtube.get_comments(video_id)
+    result["totalComments"] = len(result["comments"])
+
+    database.upsert_video(result)
 
     for comment in result["comments"]:
         comment.update({

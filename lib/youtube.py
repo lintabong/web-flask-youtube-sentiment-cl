@@ -61,7 +61,7 @@ class Youtube():
             "channel": detail["channel"],
             "thumbnail": detail_dl["thumbnail"],
             "createdAt": datetime.strptime(detail["uploadDate"], "%Y-%m-%d"),
-            "crawledAt": datetime.utcnow(),
+            "crawledAt": datetime.utcnow().replace(microsecond=0),
             "description": detail["description"],
             "comments": formated_comments
         }

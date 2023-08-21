@@ -26,10 +26,38 @@ class Database:
                                  "china", "malaysia", "arab"]
 
     def upsert_video(self, video_detail:dict):
-        product = self.db["youtube_videos"].find_one({"videoId": video_detail["videoId"]})
+        product = self.db["videos"].find_one({"videoId": video_detail["videoId"]})
         if product is None:
-            self.db["youtube_videos"].insert_one(video_detail)
+            self.db["videos"].insert_one(video_detail)
             return
+
+    def get_video(self, video_id):
+        query = [
+            {
+                '$match': {
+                    'videoId': video_id
+                }
+            }, {
+                '$lookup': {
+                    'from': 'dataset', 
+                    'localField': 'videoId', 
+                    'foreignField': 'videoId', 
+                    'as': 'datasetComments'
+                }
+            }
+        ]
+
+        result = list(self.db["videos"].aggregate(query))
+        if len(result) <= 0:
+            return None
+
+        return result[0]
+    
+    def count_comment_sentiment_video(self, video_id):
+        negative = self.db["dataset"].count_documents({"$and":[{"videoId": video_id},{"sentiment":1}]})
+        neutral  = self.db["dataset"].count_documents({"$and":[{"videoId": video_id},{"sentiment":2}]})
+        positive = self.db["dataset"].count_documents({"$and":[{"videoId": video_id},{"sentiment":3}]})
+        return negative, neutral, positive
 
     def upsert_dataset(self, comment_detail:dict):
         product = self.db["dataset"].find_one({"commentId": comment_detail["commentId"]})
@@ -65,10 +93,7 @@ class Database:
         self.db["dataset"].update_one({"commentId": comment_id}, {"$set": {"sentiment": sentiment}})
 
     def get_all_video(self):
-        return list(self.db["youtube_videos"].find())
-
-    def get_video(self, video_id):
-        return self.db["youtube_videos"].find_one({"videoId":video_id})
+        return list(self.db["videos"].find())
 
     def init_instance(self):
         if self.db["instance"].find_one({}) is None:
@@ -155,3 +180,7 @@ class Database:
             }
 
         return result
+    
+    def delete_video_and_dataset(self, video_id):
+        self.db["videos"].delete_many({"videoId": video_id})
+        self.db["dataset"].delete_many({"videoId": video_id})

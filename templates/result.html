@@ -49,35 +49,65 @@
                         <h6 class="m-0 font-weight-bold text-primary">Comments</h6>
                     </div>
                     <div class="card-body">
-                        <div class="chart-area">
-                            <table class="table">
-                                <thead>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="text-align: left;">Author</th>
+                                    <th scope="col" style="text-align: left;">Text</th>
+                                    <th scope="col" style="text-align: center;">Created At</th>
+                                    <th scope="col" style="text-align: center;">Sentiment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for each in video_comments %}
                                     <tr>
-                                        <th scope="col">Author</th>
-                                        <th scope="col">Text</th>
-                                        <th scope="col">Sentiment</th>
-                                        <th scope="col"></th>
-                                        <th scope="col"></th>
+                                        <td width="10%">{{ each["author"]["name"] }}</td>
+                                        <td width="55%">{{ each["text"] }}</td>
+                                        <td width="15%" style="text-align: center;">{{ each['createdAt'] }}</td>
+                                        <td width="10%" style="text-align: center;">
+                                            <div class="btn-group">
+                                                {% if each["sentiment"] == 0 %}
+                                                <button style="width:100px" class="btn btn-success btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                    No-label
+                                                </button>
+                                                {% elif each["sentiment"] == 1 %}
+                                                <button style="width:100px" class="btn btn-danger btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                    Negative
+                                                </button>
+                                                {% elif each["sentiment"] == 2 %}
+                                                <button style="width:100px" class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                    Neutral
+                                                </button>
+                                                {% else %}
+                                                <button style="width:100px" class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                    Positive
+                                                </button>
+                                                {% endif %}
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a class="dropdown-item" href="{{ url_for('labeling_from_result', commentId=each['commentId'], label=0, video_id=video_id) }}">no-label</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="{{ url_for('labeling_from_result', commentId=each['commentId'], label=1, video_id=video_id) }}">negative</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="{{ url_for('labeling_from_result', commentId=each['commentId'], label=2, video_id=video_id) }}">neutral</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="{{ url_for('labeling_from_result', commentId=each['commentId'], label=3, video_id=video_id) }}">positive</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {% for each in video_comments %}
-                                        <tr>
-                                            <td>{{ each["author"]["name"] }}</td>
-                                            <td>{{ each["text"] }}</td>
-                                            <td>{{ each["sentiment"] }}</td>
-                                            <td> </td>
-                                            <td> </td>
-                                        </tr>
-                                    {% endfor %}    
-                                </tbody>
-                            </table>
-                        </div>
+                                {% endfor %}    
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
-
     </main>
 {% endblock %}
 
