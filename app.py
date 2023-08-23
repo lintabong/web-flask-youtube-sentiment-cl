@@ -1,8 +1,10 @@
+import re
 from flask import Flask
 from flask import request
 from flask import render_template
 from flask import url_for
 from flask import redirect
+from flask import Response
 from threading import Thread
 
 from helper import formatter
@@ -23,7 +25,7 @@ def index():
     if request.method == "POST":
         video_id = request.form.get("fname")
 
-        p = Thread(target=predict.run, args=(video_id))
+        p = Thread(target=predict.run, args=(video_id,))
         p.start()
 
     return render_template("index.html")
@@ -135,6 +137,33 @@ def delete_video(video_id):
     database.delete_video_and_dataset(video_id)
 
     return redirect(url_for("list_video"))
+
+
+@app.route("/download_dataset", methods=["GET", "POST"])
+def download_dataset():
+    if request.method == "POST":
+        csv = ""
+        for i, data in enumerate(database.get_all_dataset()):
+            csv += "{},{},{}\n".format(i, re.sub(r"\n|\s\s", "", data["text"]), data["sentiment"])
+        
+        return Response(
+                        csv,
+                        mimetype="text/csv",
+                        headers={"Content-disposition":
+                                "attachment; filename=dataset.csv"})
+    
+
+@app.route("/download_dataset_by_video_id/<video_id>", methods=["GET", "POST"])
+def download_dataset_by_video_id(video_id):
+        csv = ""
+        for i, data in enumerate(database.get_all_dataset_by_video_id(video_id)):
+            csv += "{},{},{}\n".format(i, re.sub(r"\n|\s\s", "", data["text"]), data["sentiment"])
+        
+        return Response(
+                        csv,
+                        mimetype="text/csv",
+                        headers={"Content-disposition":
+                                f'attachment; filename=dataset_{video_id}.csv'})
 
 
 if __name__ == "__main__":

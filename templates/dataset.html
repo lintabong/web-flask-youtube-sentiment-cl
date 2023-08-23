@@ -9,6 +9,15 @@
                         <h6 class="m-0 font-weight-bold text-primary">Dataset</h6>
                     </div>
                     <div class="card-body">
+                        <div class="container text-center">
+                            <div class="row align-items-end">
+                                <div class="col"></div>
+                                <div class="col"></div>
+                                <div class="col">
+                                    
+                                </div>
+                            </div>
+                        </div>
                         <table class="table">
                             <thead>
                               <tr>
@@ -60,21 +69,37 @@
                             </tbody>
                         </table>
                         <div class="container">
-                            <nav aria-label="Page navigation">
-                                <ul class="pagination">
-                                    {% for i in pagination %}
-                                        {% if i == offset %}
-                                            <li class="page-item active" aria-current="page">
-                                                <a class="page-link" href="{{ url_for('dataset', offset=i) }}">{{ i }}</a>
-                                            </li>
-                                        {% else %}
-                                            <li class="page-item">
-                                                <a class="page-link" href="{{ url_for('dataset', offset=i) }}">{{ i }}</a>
-                                            </li>
-                                        {% endif %}
-                                    {% endfor %}
-                                </ul>
-                            </nav>
+                            <div class="container text-center">
+                                <div class="row align-items-start">
+                                    <div class="col"></div>
+                                    <div class="col">
+                                        <nav aria-label="Page navigation">
+                                            <ul class="pagination">
+                                                {% for i in pagination %}
+                                                    {% if i == offset %}
+                                                        <li class="page-item active" aria-current="page">
+                                                            <a class="page-link" href="{{ url_for('dataset', offset=i) }}">{{ i }}</a>
+                                                        </li>
+                                                    {% else %}
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="{{ url_for('dataset', offset=i) }}">{{ i }}</a>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                    <div class="col float-end">
+                                        <div class="float-end">
+                                            <form action="{{ url_for('download_dataset')}}" method="post" class="row g-1">
+                                                <div class="col-auto">
+                                                    <button type="submit" class="btn btn-primary mb-3">Download Dataset as CSV</button>
+                                                </div>
+                                            </form>      
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

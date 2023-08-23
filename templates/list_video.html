@@ -23,16 +23,19 @@
                             <tbody>
                                 {% for each in all_video %}
                                     <tr>
-                                        <td class="align-middle">
+                                        <td class="align-middle" width="10%">
                                             <a href="{{ url_for('result', video_id=each['videoId']) }}">
                                                 {{ each['videoId'] }}
                                             </a>
                                         </td>
-                                        <td class="align-middle">{{ each['title'] }}</td>
-                                        <td class="align-middle">{{ each['createdAt'] }}</td>
-                                        <td class="align-middle">{{ each['crawledAt']}}</td>
-                                        <td class="align-middle">{{ each['totalComments']}}</td>
-                                        <td class="align-middle">
+                                        <td class="align-middle" width="35%">{{ each['title'] }}</td>
+                                        <td class="align-middle" width="15%">{{ each['createdAt'] }}</td>
+                                        <td class="align-middle" width="15%">{{ each['crawledAt']}}</td>
+                                        <td class="align-middle" width="10%">{{ each['totalComments']}}</td>
+                                        <td class="" width="30%">
+                                            <a class="btn btn-success btn-sm" href="{{ url_for('download_dataset_by_video_id', video_id=each['videoId']) }}" role="button">
+                                                Download
+                                            </a>
                                             <a class="btn btn-danger btn-sm" href="{{ url_for('delete_video', video_id=each['videoId']) }}" role="button">
                                                 Delete
                                             </a>

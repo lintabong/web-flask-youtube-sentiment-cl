@@ -79,6 +79,12 @@ class Database:
     def get_dataset(self, offset=0):
         return list(self.db["dataset"].find({}).limit(self.limit).skip(int(offset)*self.limit))
     
+    def get_all_dataset(self):
+        return list(self.db["dataset"].find({}))
+    
+    def get_all_dataset_by_video_id(self, video_id):
+        return list(self.db["dataset"].find({"videoId": video_id}))
+    
     def get_max_dataset_page(self):
         end = self.db["dataset"].count_documents({})
         return math.floor(end/self.limit) + 1 if end%self.limit > 0 else math.floor(end/self.limit)
