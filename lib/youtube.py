@@ -30,7 +30,7 @@ class Youtube():
             return info
 
     @staticmethod
-    def get_comments_only(url, total:int=1000):
+    def get_comments_only(url, total:int=10000):
         downloader = YoutubeCommentDownloader()
         comments   = downloader.get_comments_from_url(url, sort_by=SORT_BY_POPULAR)
 
@@ -60,7 +60,7 @@ class Youtube():
             "viewCount": detail["viewCount"]["text"],
             "channel": detail["channel"],
             "thumbnail": detail_dl["thumbnail"],
-            "createdAt": datetime.strptime(detail["uploadDate"], "%Y-%m-%d"),
+            "createdAt": datetime.fromisoformat(detail["uploadDate"]),
             "crawledAt": datetime.utcnow().replace(microsecond=0),
             "description": detail["description"],
             "comments": formated_comments
